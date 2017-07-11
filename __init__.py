@@ -134,9 +134,13 @@ class WeatherSkill(MycroftSkill):
             weather_code = str(weather.get_weather_icon_name())
             img_code = self.CODES[weather_code]
             temp = data['temp_current']
+            tempmin = data['temp_min']
+            tempmax = data['temp_max']
+            lcond = data['condition']
             self.enclosure.deactivate_mouth_events()
             self.enclosure.weather_display(img_code, temp)
-
+            self.enclosure.ws.emit(Message("data", {'desktop': {'currenttemp': temp, 'mintemp': tempmin, 'maxtemp': tempmax, 'loc': location, 'sum': lcond}}))
+            
             dialog_name = "current"
             if pretty_location == self.location_pretty:
                 dialog_name += ".local"
@@ -222,7 +226,7 @@ class WeatherSkill(MycroftSkill):
             'condition': weather.get_detailed_status(),
             'temp_current': self.__get_temperature(weather, temp),
             'temp_min': self.__get_temperature(weather, temp_min),
-            'temp_max': self.__get_temperature(weather, temp_max)
+            'temp_max': self.__get_temperature(weather, temp_max),
         }
         return data
 
